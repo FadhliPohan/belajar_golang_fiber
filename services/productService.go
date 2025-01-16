@@ -11,12 +11,16 @@ type ProductService struct {
 	DB *gorm.DB
 }
 
-func (s *ProductService) GetAllProduct()([]models.Product,error) {
+func (s *ProductService) GetAllProduct(page int, size int)([]models.Product,int64,error) {
 	var products []models.Product
-	if err := s.DB.Find(&products).Error; err != nil {
-		return nil, err
+	var totalData int64
+	if err :=s.DB.Model(&models.Product{}).Count(&totalData).Error; err != nil {
+		return nil, 0, err
 	}
-	return products, nil
+	if err := s.DB.Offset((page - 1) * size).Limit(size).Find(&products).Count(&totalData).Error; err!= nil {
+        return nil, 0, err
+    }
+	return products, totalData, nil 
 }
 
 func (s *ProductService) GetProductByID(id string)(*models.Product,error) {
