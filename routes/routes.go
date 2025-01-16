@@ -17,6 +17,7 @@ func SetupRoutes(app *fiber.App, db *gorm.DB, cfg *config.Config) {
 	api := app.Group("/api")
 	api.Static("/public", "/public")
 
+	//Produk Route
 	productRoutes := api.Group("/produk")
 	productRoutes.Get("/", productHandler.GetAllProducts)
 	productRoutes.Get("/:uuid", productHandler.GetProductByUID)
