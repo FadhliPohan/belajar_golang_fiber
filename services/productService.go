@@ -2,6 +2,7 @@ package services
 
 import (
 	"belajar_fiber/models"
+	"belajar_fiber/utils"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -11,17 +12,30 @@ type ProductService struct {
 	DB *gorm.DB
 }
 
-func (s *ProductService) GetAllProduct(page int, size int)([]models.Product,int64,error) {
-	var products []models.Product
-	var totalData int64
-	if err :=s.DB.Model(&models.Product{}).Count(&totalData).Error; err != nil {
-		return nil, 0, err
-	}
-	if err := s.DB.Offset((page - 1) * size).Limit(size).Find(&products).Count(&totalData).Error; err!= nil {
-        return nil, 0, err
-    }
-	return products, totalData, nil 
-}
+// GetAllProduct retrieves paginated and filtered products  
+func (s *ProductService) GetAllProduct(page int, size int, filters map[string]string) ([]models.Product, int64, error) {  
+	var products []models.Product  
+	var totalData int64  
+  
+	// Apply filters using the GetFilter function from utils  
+	query := s.DB.Model(&models.Product{})  
+	query = utils.GetFilter(filters, query) // Use utils.GetFilter  
+  
+	// Count total number of products after applying filters  
+	if err := query.Count(&totalData).Error; err != nil {  
+		return nil, 0, err  
+	}  
+  
+	// Get limit and offset for pagination  
+	limit, offset := utils.GetLimitOffset(size, page) // Use utils.GetLimitOffset  
+  
+	// Retrieve paginated products after applying filters  
+	if err := query.Offset(offset).Limit(limit).Find(&products).Error; err != nil {  
+		return nil, 0, err  
+	}  
+  
+	return products, totalData, nil  
+}  
 
 func (s *ProductService) GetProductByID(id string)(*models.Product,error) {
 	var product models.Product
