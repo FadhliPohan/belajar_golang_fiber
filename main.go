@@ -3,10 +3,12 @@ package main
 import (
 	"belajar_fiber/config"
 	"belajar_fiber/database"
+
 	// "belajar_fiber/database/seeder"
+	// "log"
 	"belajar_fiber/models"
 	"belajar_fiber/routes"
-	// "log"
+
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -23,13 +25,15 @@ func main() {
 
 	// Definisikan rute dasar
 	db := database.Connect()
+
 	// Migrasi tabel User
 	models.Migrate(db)
 	models.MigrateProduct(db)
+	models.MigrateKategori(db)
 
-	// if err := seeder.SeedProducts(db); err != nil {  
-	// 	log.Fatalf("Could not seed the database: %v", err)  
-	// }  
+	// if err := seeder.SeedProducts(db); err != nil {
+	// 	log.Fatalf("Could not seed the database: %v", err)
+	// }
 
 	// Middleware
 	app.Use(logger.New())
@@ -40,8 +44,6 @@ func main() {
 
 	// Setup Routes
 	routes.SetupRoutes(app, db, cfg)
-
-
 
 	// Rute dasar
 	app.Get("/", func(c *fiber.Ctx) error {
