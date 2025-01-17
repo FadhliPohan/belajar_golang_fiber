@@ -1,0 +1,12 @@
+-membuat response error atau validator
+-mebuat crud upload file
+-membuat response data custom
+-membuat relasi data
+
+-membuat fungsi query dan dengan join'
+-
+
+-membuat login, auth, dan logout
+-integrasi pada file
+-pembuatan middleware
+-pembuatan export excel
